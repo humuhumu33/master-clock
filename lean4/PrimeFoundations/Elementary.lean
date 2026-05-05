@@ -54,6 +54,7 @@ valid for `|u| < 1`.
 
 import Mathlib.Data.Rat.Defs
 import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Tactic.Ring
 import PrimeFoundations.Rational
 import PrimeFoundations.Cauchy
 

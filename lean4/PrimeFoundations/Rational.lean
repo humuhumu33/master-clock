@@ -30,6 +30,9 @@ inhabitant condition that makes `Rat` a well-formed Layer 4 carrier.
 
 import Mathlib.Data.Rat.Defs
 import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Tactic.NormNum
+
+set_option linter.dupNamespace false
 
 namespace PrimeFoundations.Rational
 
@@ -59,21 +62,14 @@ canonical-form invariant from `BigRational`. -/
 theorem num_den_coprime (q : Rational) : q.num.natAbs.Coprime q.den :=
   q.reduced
 
-/-! ## Field axioms (sanity mirrors of Rust ring tests) -/
+/-! ## Field axioms
 
-/-- **Theorem.** Addition is associative on `Rational`. -/
-theorem add_assoc' (a b c : Rational) : (a + b) + c = a + (b + c) :=
-  add_assoc a b c
+These are inherited from `Rat`'s `Field` instance in mathlib; we
+omit explicit restatements here because the abbrev `Rational := Rat`
+makes every `Rat` lemma immediately applicable. The theorems below
+are the only ones whose values are spot-checked from the Rust suite.
 
-/-- **Theorem.** Addition is commutative on `Rational`. -/
-theorem add_comm' (a b : Rational) : a + b = b + a :=
-  add_comm a b
-
-/-- **Theorem.** Multiplicative inverse: `a · a⁻¹ = 1` for `a ≠ 0`. -/
-theorem mul_inv_cancel' (a : Rational) (ha : a ≠ 0) : a * a⁻¹ = 1 :=
-  mul_inv_cancel₀ ha
-
-/-! ## Spot-check fractions matching the Rust test suite -/
+## Spot-check fractions matching the Rust test suite -/
 
 /-- **Theorem.** `1/2 + 1/3 = 5/6`, mirrors the Rust `ring_axioms`
 spot value. -/

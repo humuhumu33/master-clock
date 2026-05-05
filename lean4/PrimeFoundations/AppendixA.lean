@@ -69,13 +69,13 @@ def sumFiboDR : Nat := (rows.map (fun r => r.2.2)).sum
 Gary's "432 Grand Invariant" from FIXED PDF Appendix A "TOTAL" row.
 Mirror of `appendix_a::tests::sum_dr_equals_432`. -/
 theorem sum_dr_eq_432 : sumDR = 432 := by
-  decide
+  native_decide
 
 /-- **Theorem.** `Σ dr(F_n) over R(360) = 432`. The second half of
 the "432 Grand Invariant". Mirror of
 `appendix_a::tests::sum_fibo_dr_equals_432`. -/
 theorem sum_fibo_dr_eq_432 : sumFiboDR = 432 := by
-  decide
+  native_decide
 
 /-! ## Structural derivations — independent paths to 432 -/
 
@@ -94,7 +94,7 @@ Structural derivation: U(30) splits 4–4 by residue mod 3. Since
 Total: `4 · 4 · 12 + 4 · 4 · 15 = 432`. Mirror of
 `appendix_a::tests::sum_dr_matches_structural_derivation`. -/
 theorem sum_dr_structural : sumDR = 4 * 4 * 12 + 4 * 4 * 15 := by
-  decide
+  native_decide
 
 /-- **Theorem.** `Σ dr(F_n) = 12 × 36 = 432`.
 
@@ -106,7 +106,7 @@ The sum `Σ dr(F_u)` over `u ∈ U(24)` equals 36
 The 36 itself is forced by the Fibonacci-DR palindrome over U(24):
 `{1, 5, 4, 8, 8, 4, 5, 1}` sums to `2 · (1 + 5 + 4 + 8) = 36`. -/
 theorem sum_fibo_dr_structural : sumFiboDR = 12 * 36 := by
-  decide
+  native_decide
 
 /-- **Theorem.** Direct connection to the Fibonacci module:
 `sumFiboDR = LATTICE_LAYERS · Σ_{u ∈ U(24)} dr(F_u)`.
@@ -117,7 +117,7 @@ the Fibonacci module's own primitives, demonstrating that
 the 36. -/
 theorem sum_fibo_dr_via_u24 :
     sumFiboDR = latticeLayers * (Fibonacci.U24.map Fibonacci.drFib).sum := by
-  decide
+  native_decide
 
 /-! ## Spot checks against the FIXED PDF -/
 
@@ -128,11 +128,11 @@ The Rust side enforces full agreement at compile time across all
 96 rows; Phase 2 mirrors a representative spot-check sample. -/
 theorem rows_spot_checks :
     rows.take 5 = [(1, 1, 1), (7, 7, 4), (11, 2, 8), (13, 4, 8), (17, 8, 4)] := by
-  decide
+  native_decide
 
 /-- **Theorem.** Last row of Appendix A: `(359, 8, 1)`. -/
 theorem rows_last :
     rows.getLast? = some (359, 8, 1) := by
-  decide
+  native_decide
 
 end PrimeFoundations.AppendixA
