@@ -1,0 +1,16 @@
+# Rust
+/target/
+**/*.rs.bk
+
+# Lean
+/lean4/.lake/
+/lean4/build/
+/lean4/.cache/
+
+# Editor / OS
+.DS_Store
+*.swp
+*~
+
+# Logs and scratch
+*.log
