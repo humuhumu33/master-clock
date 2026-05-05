@@ -70,7 +70,7 @@ def decompose (n : Nat) : Option (Nat × Nat) :=
   else
     let u := n % modulusU
     let layer := n / modulusU
-    let idx := U30.residues.indexOf u
+    let idx := U30.residues.findIdx (· = u)
     some (idx, layer)
 
 /-- Compose `(u_index, layer)` back into `n = residues[u_index] + MODULUS_U · layer`. -/
@@ -158,6 +158,6 @@ theorem elements_coprime (n : Nat) (h : n ∈ elements) :
   unfold elements at h
   rw [List.mem_filter] at h
   obtain ⟨_, hgcd⟩ := h
-  exact (beq_iff_eq _ _).mp hgcd
+  exact beq_iff_eq.mp hgcd
 
 end PrimeFoundations.R360

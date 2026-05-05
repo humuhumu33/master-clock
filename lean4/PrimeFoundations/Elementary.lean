@@ -53,8 +53,7 @@ valid for `|u| < 1`.
 -/
 
 import Mathlib.Data.Rat.Defs
-import Mathlib.Data.Rat.Order
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.Order.Field.Basic
 import PrimeFoundations.Rational
 import PrimeFoundations.Cauchy
 

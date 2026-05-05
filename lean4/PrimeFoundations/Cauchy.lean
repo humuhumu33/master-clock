@@ -38,7 +38,7 @@ witness is constructively recoverable yields a `CauchySeq` here.
 -/
 
 import Mathlib.Data.Rat.Defs
-import Mathlib.Data.Rat.Order
+import Mathlib.Algebra.Order.Field.Basic
 import PrimeFoundations.Rational
 
 namespace PrimeFoundations.Cauchy

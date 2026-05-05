@@ -29,7 +29,6 @@ inhabitant condition that makes `Rat` a well-formed Layer 4 carrier.
 -/
 
 import Mathlib.Data.Rat.Defs
-import Mathlib.Data.Rat.Order
 import Mathlib.Algebra.Order.Field.Basic
 
 namespace PrimeFoundations.Rational
