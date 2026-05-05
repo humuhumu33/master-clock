@@ -92,15 +92,15 @@ theorem dN_zero : dN 0 = 0 := by rfl
 /-- **One full period.** `D(modulusR) = periodSum`. The Phase 1
 invariant `sumFiboDR = 432` reappears as the period constant of `D`. -/
 theorem dN_one_period_equals_periodSum : dN modulusR = periodSum := by
-  decide
+  native_decide
 
 /-- **Two full periods.** `D(2·modulusR) = 2·periodSum`. -/
 theorem dN_two_periods : dN (2 * modulusR) = 2 * periodSum := by
-  decide
+  native_decide
 
 /-- **Three full periods.** `D(3·modulusR) = 3·periodSum`. -/
 theorem dN_three_periods : dN (3 * modulusR) = 3 * periodSum := by
-  decide
+  native_decide
 
 /-- **First-layer sum.** `D(modulusU − 1) = perLayerFiboDRSum`.
 The first U(30) layer contributes exactly the per-layer sum from
@@ -108,14 +108,14 @@ the structural `latticeLayers · 36 = 432` decomposition (mirror of
 Phase 1 `sum_fibo_dr_structural`). -/
 theorem dN_first_layer_equals_perLayerSum :
     dN (modulusU - 1) = perLayerFiboDRSum := by
-  decide
+  native_decide
 
 /-- **First layer boundary.** `D(modulusU) = perLayerFiboDRSum` —
 position `modulusU` is not in `R(modulusR)`, so `D(modulusU) =
 D(modulusU − 1)`. -/
 theorem dN_first_layer_boundary :
     dN modulusU = perLayerFiboDRSum := by
-  decide
+  native_decide
 
 /-! ## Period invariant (the load-bearing theorem)
 
@@ -131,17 +131,17 @@ over a single representative period via `decide`.
 /-- **Period invariant** — first instance. `D(modulusR) − D(0) =
 periodSum`. -/
 theorem period_increment_first :
-    dN modulusR - dN 0 = periodSum := by decide
+    dN modulusR - dN 0 = periodSum := by native_decide
 
 /-- **Period invariant** — second instance.
 `D(2·modulusR) − D(modulusR) = periodSum`. -/
 theorem period_increment_second :
-    dN (2 * modulusR) - dN modulusR = periodSum := by decide
+    dN (2 * modulusR) - dN modulusR = periodSum := by native_decide
 
 /-- **Period invariant** — third instance.
 `D(3·modulusR) − D(2·modulusR) = periodSum`. -/
 theorem period_increment_third :
-    dN (3 * modulusR) - dN (2 * modulusR) = periodSum := by decide
+    dN (3 * modulusR) - dN (2 * modulusR) = periodSum := by native_decide
 
 /-- **Master falsifier-prep theorem.** All three of Gary's
 tabulated N-values from the Validated_Theorem PDF are at
@@ -152,13 +152,13 @@ which equals `280` because the multiplicative orbit of `10 mod 360`
 stabilises at this value. This is a load-bearing structural
 identity that the Master-Clock formula must respect. -/
 theorem period_residue_at_10_to_10 :
-    10000000000 % modulusR = 280 := by decide
+    10000000000 % modulusR = 280 := by native_decide
 
 theorem period_residue_at_10_to_11 :
-    100000000000 % modulusR = 280 := by decide
+    100000000000 % modulusR = 280 := by native_decide
 
 theorem period_residue_at_10_to_12 :
-    1000000000000 % modulusR = 280 := by decide
+    1000000000000 % modulusR = 280 := by native_decide
 
 /-- **Residue equality across Gary's three N-points.** The same
 shared partial residue appears at every tabulated N. -/
