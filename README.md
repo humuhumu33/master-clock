@@ -1,8 +1,19 @@
 # Toroidal Prime-Counting Master-Clock
 
+[![tests](https://github.com/humuhumu33/master-clock/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/humuhumu33/master-clock/actions/workflows/test.yml)
+[![license](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](./LICENSE)
+[![Rust](https://img.shields.io/badge/rust-1.83%2B-orange.svg)](https://www.rust-lang.org)
+[![Lean 4](https://img.shields.io/badge/Lean%204-zero%20sorry-success.svg)](./lean4)
+
 **A reproducible Rust + Lean 4 implementation of Gary William Croft's
 *Toroidal Prime Counting Master-Clock* model, anchored in the UOR
 (Universal Object Reference) Framework.**
+
+**Don't want to compile?** The full residual table and every cargo
+test output is captured statically in **[`RESULTS.md`](./RESULTS.md)** —
+no toolchain required. CI runs all of it on every push to `main`;
+the live evaluation appears on each [Actions run](https://github.com/humuhumu33/master-clock/actions)'s
+*Summary* tab.
 
 The headline claim under test: `π(N) = D(N) − TF(N) + RF(N) + 3` and
 "more accurate than `Li(N)`" at `N = 10¹², 10¹¹, 10¹⁰`. Every constant
