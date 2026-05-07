@@ -1,11 +1,11 @@
 [package]
 name = "toroidal-prime-clock"
-version = "0.0.1"
+version = "0.1.0"
 edition = "2021"
 rust-version = "1.83"
 license = "Apache-2.0"
-description = "Toroidal Prime Counting Master-Clock — UOR-grounded encoding of Gary William Croft's prime-counting model. Foundations only; speculative components are stubbed pending specification."
-repository = "https://github.com/UOR-Foundation/research"
+description = "Strict Phase 1 encoding of Gary William Croft's published Prime Spiral Sieve. Anchored in the UOR Foundation; every constant derives from MODULUS_U=30 and NUMERAL_BASE=10 via standard number theory."
+repository = "https://github.com/UOR-Foundation/prime-clock"
 homepage = "https://uor.foundation/"
 authors = ["UOR Foundation"]
 publish = false
@@ -23,48 +23,21 @@ publish = false
 path = "src/lib.rs"
 
 [dependencies]
-# UOR Foundation: typed traits, ConstrainedTypeShape, ConstraintRef::Residue,
-# OntologyVerifiedMint, ContentFingerprint, witness scaffolds.
-#
-# Sourced from the canonical UOR-Framework GitHub repository so the
-# crate compiles on any machine without requiring a sibling local
-# checkout. Switch to a crates.io version once a published release
-# carries the Phase 17 SDK macros (coproduct_shape!,
-# cartesian_product_shape!) we depend on.
 uor-foundation = { git = "https://github.com/UOR-Foundation/UOR-Framework", branch = "main", default-features = false }
-
-# UOR SDK: procedural macros — coproduct_shape!, product_shape!,
-# cartesian_product_shape! — for compile-time shape composition.
 uor-foundation-sdk = { git = "https://github.com/UOR-Foundation/UOR-Framework", branch = "main" }
 
-# Exact rational arithmetic. NO floating point anywhere in this crate.
 num-rational = { version = "0.4", default-features = false, features = ["num-bigint"] }
 num-bigint = { version = "0.4", default-features = false }
 num-traits = { version = "0.2", default-features = false }
 num-integer = { version = "0.1", default-features = false }
 
-[dev-dependencies]
-# Atlas correspondence tests (Phase 2): the 96-vertex Resonance Classes
-# graph in atlas-embeddings is the formal bedrock for our R(360) lattice.
-# atlas-embeddings = { path = "../../research-main/atlas-embeddings" }
-
 [dependencies.primal]
-# Pure-Rust prime sieve. Used by the `ground-truth` feature to verify
-# Dirichlet equidistribution at scales beyond the 10⁴ compile-time sieve.
-# Optional — does not enter the no_std core.
 version = "0.3"
 optional = true
 
 [features]
 default = []
-# Allocator-backed paths (Vec / BTreeMap). The core foundational lemmas
-# stay `#![no_std]` and depend on neither `alloc` nor `std`.
 alloc = []
-# Host-only ground-truth π(N) and per-class prime counts via `primal`
-# (pure Rust). Disabled by default because it requires `std`/`alloc`,
-# pulls a non-trivial dependency, and runs slow tests at N = 10⁹.
-# Larger N (10¹², 10¹³) requires `primesieve` C-library bindings —
-# future work, not Phase 2 scope.
 ground-truth = ["alloc", "dep:primal"]
 
 [lints.rust]
@@ -72,7 +45,6 @@ unsafe_code = "forbid"
 missing_docs = "deny"
 
 [lints.clippy]
-# Atlas-embeddings parity (strictest reasonable posture).
 unwrap_used = "deny"
 expect_used = "deny"
 panic = "deny"

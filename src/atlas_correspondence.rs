@@ -445,40 +445,4 @@ mod tests {
     fn permutations_are_mutual_inverses() {
         for i in 0..R_CARDINALITY {
             assert_eq!(ATLAS_TO_R_INDEX[R_TO_ATLAS_INDEX[i]], i);
-        }
-        for j in 0..R_CARDINALITY {
-            assert_eq!(R_TO_ATLAS_INDEX[ATLAS_TO_R_INDEX[j]], j);
-        }
-    }
-
-    /// Round-trip `n → label → n` is the identity on `R(360)`.
-    #[test]
-    fn n_to_label_to_n_is_identity() {
-        for &n in &ELEMENTS {
-            let label = n_to_atlas_label(n).expect("R(360) element must map");
-            let n_back = atlas_label_to_n(label).expect("valid label must map back");
-            assert_eq!(n, n_back, "round-trip failure at n = {n}");
-        }
-    }
-
-    /// Round-trip `label → n → label` is the identity on Atlas-96.
-    #[test]
-    fn label_to_n_to_label_is_identity() {
-        for &label in &ATLAS_LABELS {
-            let n = atlas_label_to_n(label).expect("Atlas vertex must map");
-            let label_back = n_to_atlas_label(n).expect("R(360) element must map back");
-            assert_eq!(label, label_back, "round-trip failure at {label:?}");
-        }
-    }
-
-    /// `n_to_atlas_label` rejects integers not in `R(360)`.
-    #[test]
-    fn n_to_label_rejects_non_r360() {
-        for n in [0u32, 2, 3, 5, 6, 30, 60, 360, 361, 1000] {
-            assert!(
-                n_to_atlas_label(n).is_none(),
-                "{n} should not have an Atlas label"
-            );
-        }
-    }
-}
+  

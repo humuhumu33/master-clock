@@ -27,7 +27,7 @@ open PrimeFoundations.Parameters
 
 /-! ## The 8 residues — derived and stated -/
 
-/-- Gary's verbatim U(30) enumeration from FIXED PDF Appendix A.
+/-- Gary's verbatim U(30) enumeration from Appendix A reference table.
 
 Used **only** as a verification target against the derived `residues`
 below. Production-side code should consult `residues`. -/
@@ -50,7 +50,7 @@ theorem totient_eq_u30Cardinality :
   decide
 
 /-- **Theorem.** The computed `residues` exactly equal Gary's stated
-list from the FIXED PDF Appendix A.
+list from the Appendix A reference table.
 
 This is the load-bearing cross-check: agreement between `gcd`-based
 filtering and Gary's verbatim values. Mirror of the Phase 1

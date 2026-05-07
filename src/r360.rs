@@ -12,12 +12,10 @@
 //! integers like `49 = 7²`, `77 = 7·11`, `91 = 7·13`, etc., wherever
 //! the composite happens to be coprime to 30.
 //!
-//! In the Master-Clock framing these are the *carriers of potential
-//! resonance* — the addressable rooms where primes can live, not the
-//! primes themselves. Gary's `D(N)` algorithm
-//! ([`crate::d_function`]) walks these slots one by one and sums
-//! Fibonacci digital-root weights at each; primality is never tested,
-//! only modular position is.
+//! These 96 slots are the addressable lattice rooms where primes can
+//! live. The wheel-30 sieve in [`crate::sieve`] visits exactly these
+//! positions to determine primality; nothing else in the crate
+//! depends on a per-slot weighting.
 //!
 //! ## Bijection to `U(30) × Z/12`
 //!
@@ -71,7 +69,7 @@
 //! `https://uor.foundation/query/TriadProjection` (three variants:
 //! `{Stratum, Spectrum, Address}`).
 //!
-//! Phase 2 O3 verdict (see `STRUCTURAL_CORRESPONDENCES.md`):
+//! Phase 2 O3 verdict (see `RESULTS.md`):
 //! **cardinality-only match**. All three sides carry real,
 //! typed Z/3 structure but the specific canonical bijection
 //! between `Z/3 ↔ d₄₅ ∈ {−1, 0, +1} ↔ {Stratum, Spectrum, Address}`
@@ -447,7 +445,7 @@ mod tests {
         assert!(compose(0, LATTICE_LAYERS as u32).is_none());
     }
 
-    /// Spot checks against the FIXED PDF.
+    /// Spot checks against the Appendix A reference table.
     #[test]
     fn spot_checks_against_fixed_pdf() {
         // From Appendix A: n = 1 ↔ (u_index = 0 [u=1], layer = 0).
@@ -463,67 +461,4 @@ mod tests {
     /// `R360` shape's SITE_COUNT equals `U30::SITE_COUNT + Z12::SITE_COUNT`.
     #[test]
     fn r360_site_count_is_sum() {
-        let u30_sc = <U30 as ConstrainedTypeShape>::SITE_COUNT;
-        let z12_sc = <Z12 as ConstrainedTypeShape>::SITE_COUNT;
-        let r360_sc = <R360 as ConstrainedTypeShape>::SITE_COUNT;
-        assert_eq!(r360_sc, u30_sc + z12_sc);
-    }
-
-    /// `Z12::SITE_COUNT = 5` for the chosen 12-leaf balanced tree.
-    #[test]
-    fn z12_site_count_is_five() {
-        assert_eq!(<Z12 as ConstrainedTypeShape>::SITE_COUNT, 5);
-    }
-
-    /// `R360::IRI` is the SDK-canonical cartesian-product IRI
-    /// `urn:uor:cartesian:{lex_earlier}:{lex_later}`.
-    #[test]
-    fn r360_iri_is_canonical_cartesian() {
-        let iri = <R360 as ConstrainedTypeShape>::IRI;
-        assert!(iri.starts_with("urn:uor:cartesian:"), "got {iri}");
-    }
-
-    /// `Z12::IRI` is the SDK-canonical coproduct IRI.
-    #[test]
-    fn z12_iri_is_canonical_coproduct() {
-        let iri = <Z12 as ConstrainedTypeShape>::IRI;
-        assert!(iri.starts_with("urn:uor:coproduct:"), "got {iri}");
-    }
-
-    /// **CRT decomposition.** `Z/12 ≅ Z/4 × Z/3` via
-    /// `k ↔ (k mod 4, k mod 3)`. Verifies the bijection by
-    /// exhaustion: each `(a, b) ∈ Z/4 × Z/3` corresponds to exactly
-    /// one `k ∈ Z/12`.
-    ///
-    /// The `Z/3` factor connects to `query::TriadProjection` in the
-    /// UOR ontology; the `Z/4` factor connects to the binary depth
-    /// of the lattice.
-    #[test]
-    fn z12_decomposes_via_crt() {
-        let mut hits = [[false; 3]; 4]; // [k mod 4][k mod 3]
-        for k in 0..(LATTICE_LAYERS as u32) {
-            let a = (k % 4) as usize;
-            let b = (k % 3) as usize;
-            assert!(!hits[a][b], "duplicate (a, b) pair from k = {k}");
-            hits[a][b] = true;
-        }
-        // Every (a, b) covered exactly once.
-        for a in 0..4 {
-            for b in 0..3 {
-                assert!(hits[a][b], "(a, b) = ({a}, {b}) never hit");
-            }
-        }
-    }
-
-    /// **Set agreement with `appendix_a::ROWS`.** The integers in
-    /// `ELEMENTS` are exactly the first column of [`crate::appendix_a::ROWS`].
-    #[test]
-    fn elements_match_appendix_a_first_column() {
-        use crate::appendix_a::ROWS;
-        for (i, (&n_here, &(n_there, _, _))) in
-            ELEMENTS.iter().zip(ROWS.iter()).enumerate()
-        {
-            assert_eq!(n_here, n_there, "row {i} disagrees");
-        }
-    }
-}
+        let u30_sc = <U30 as Cons

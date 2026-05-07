@@ -81,9 +81,9 @@ def compose (uIdx : Nat) (layer : Nat) : Option Nat :=
   else
     none
 
-/-! ## Spot checks against the FIXED PDF (Phase 1 mirror) -/
+/-! ## Spot checks against the Appendix A reference (Phase 1 mirror) -/
 
-/-- **Theorem.** `decompose` matches FIXED PDF Appendix A on the
+/-- **Theorem.** `decompose` matches Appendix A reference table on the
 spot-check rows. Mirror of `r360::tests::spot_checks_against_fixed_pdf`. -/
 theorem decompose_spot_checks :
     decompose 1 = some (0, 0) ∧

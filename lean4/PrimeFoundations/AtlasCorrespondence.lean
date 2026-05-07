@@ -255,47 +255,4 @@ theorem rToAtlasIndex_bijective_on_range :
 The Atlas-96 adjacency is now formally specified above. To complete
 the edge-preserving correspondence, the **next step** is to
 identify the natural adjacency relation on `R(360)` whose graph is
-isomorphic to the Atlas-96 graph defined here.
-
-Constraints any candidate must satisfy:
-
-- 96 vertices (matches `R360.elements.length`).
-- Same degree sequence: 32 vertices of degree 6 and 64 vertices of
-  degree 5.
-- Same edge count: 256 undirected edges.
-- The edge-preserving bijection `π : R(360) → atlasLabels` must
-  send adjacent R(360) elements to adjacent atlasLabels and
-  vice versa.
-
-Candidate adjacencies on R(360) to test:
-
-1. **CRT-coordinate adjacency.** Decompose `n ∈ R(360)` via
-   `U(360) ≅ U(8) × U(9) × U(5)`, then declare two integers
-   adjacent iff they differ in exactly one CRT factor by a
-   "minimal step" in that factor's natural cyclic structure.
-2. **Multiplicative generator adjacency.** Pick a small set of
-   multiplicative generators of `U(360)` (e.g., `7, 11`); declare
-   `n ~ m` iff `n · g ≡ m (mod 360)` for some `g` in the set.
-3. **(u_index, layer)-coordinate adjacency.** Decompose `n` via the
-   Phase 1 bijection `R360.decompose`; declare adjacency by
-   Hamming-1 flips on the bit-encoding of the U(30)-index plus
-   cyclic moves on the layer.
-
-Each candidate generates a graph; comparing the resulting degree
-sequence and edge structure to Atlas-96 narrows the search.
-
-The work is genuinely open mathematics. The committee handing
-`SPEC_REQUEST.md` to Gary handles the prime-counting side; the
-analogue for this question is to escalate to Alex when
-communication resumes:
-
-> What natural adjacency relation on `R(360) = U(360)` corresponds
-> to Hamming-1 flips on `Atlas::Label::(e1, e2, e3, d45, e6)` in
-> `atlas-embeddings`?
-
-Until that question is answered, `R_TO_ATLAS_INDEX` in the Rust
-crate retains its identity placeholder, with the disclaimer in
-`atlas_correspondence.rs` updated to cite this Lean module's
-adjacency formalisation as the Phase 2 progress. -/
-
-end PrimeFoundations.AtlasCorrespondence
+isomorphic to the 

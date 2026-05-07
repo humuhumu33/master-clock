@@ -66,7 +66,7 @@ def sumFiboDR : Nat := (rows.map (fun r => r.2.2)).sum
 /-! ## The two 432 invariants — direct verification -/
 
 /-- **Theorem.** `Σ dr(n) over R(360) = 432`. The first half of
-Gary's "432 Grand Invariant" from FIXED PDF Appendix A "TOTAL" row.
+Gary's "432 Grand Invariant" from Appendix A reference table "TOTAL" row.
 Mirror of `appendix_a::tests::sum_dr_equals_432`. -/
 theorem sum_dr_eq_432 : sumDR = 432 := by
   native_decide
@@ -119,9 +119,9 @@ theorem sum_fibo_dr_via_u24 :
     sumFiboDR = latticeLayers * (Fibonacci.U24.map Fibonacci.drFib).sum := by
   native_decide
 
-/-! ## Spot checks against the FIXED PDF -/
+/-! ## Spot checks against the Appendix A reference -/
 
-/-- **Theorem.** First five rows match the FIXED PDF Appendix A.
+/-- **Theorem.** First five rows match the Appendix A reference table.
 Mirror of the head of `appendix_a::FIXED_PDF_VERIFICATION`.
 
 The Rust side enforces full agreement at compile time across all
@@ -133,6 +133,3 @@ theorem rows_spot_checks :
 /-- **Theorem.** Last row of Appendix A: `(359, 8, 1)`. -/
 theorem rows_last :
     rows.getLast? = some (359, 8, 1) := by
-  native_decide
-
-end PrimeFoundations.AppendixA

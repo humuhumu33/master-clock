@@ -9,30 +9,24 @@
 //! check that no `p < 24` satisfies `F_p ≡ 0 (mod 9)` and
 //! `F_{p+1} ≡ 1 (mod 9)` simultaneously.
 //!
-//! ## F49 — the Master-Clock ratchet anchor
+//! ## `F_49` — the largest 32-bit-decimal Fibonacci index
 //!
-//! `F_49 = 7,778,742,049`. Gary's FIXED PDF §III gives the ratchet
-//! threshold as `7.778×10⁹`, which is exactly `F_49`. This crate
-//! computes `F_49` from the recurrence and asserts equality with Gary's
-//! stated value at compile time.
+//! `F_49 = 7,778,742,049`. The largest Fibonacci number that fits in
+//! a 32-bit decimal magnitude (`< 10¹⁰`); a convenient upper bound
+//! for any test sweep that lives in `u64`. Computed at compile time
+//! from the recurrence below.
 
 use crate::parameters::MODULUS_DR;
 #[cfg(test)]
 use crate::parameters::PISANO_PERIOD_MOD_DR;
 
-/// **Gary's stated value (FIXED PDF §III).**
-///
-/// `F_49 = 7,778,742,049` is the Master-Clock ratchet anchor.
-pub const F49_STATED: u64 = 7_778_742_049;
-
-/// **Derived.**
-///
-/// `F_49` computed directly from the recurrence.
-pub const F49_COMPUTED: u64 = fib(49);
+/// `F_49 = 7,778,742,049`, computed at compile time from the
+/// Fibonacci recurrence.
+pub const F49: u64 = fib(49);
 
 const _: () = assert!(
-    F49_COMPUTED == F49_STATED,
-    "F_49 computed must equal Gary's stated 7,778,742,049"
+    F49 == 7_778_742_049,
+    "F_49 must equal 7,778,742,049 by the standard Fibonacci recurrence"
 );
 
 /// Compute `F_k` exactly. Overflows `u64` for `k ≥ 94`; only used here
@@ -176,13 +170,12 @@ mod tests {
         }
     }
 
-    /// `F_49 = 7,778,742,049` — Gary's stated F49 ratchet anchor.
-    /// (The compile-time `const _: () = assert!` already forces this;
-    /// this test is documentation.)
+    /// `F_49 = 7,778,742,049`, by the recurrence. (The compile-time
+    /// `const _: () = assert!` already forces this; this test is
+    /// documentation.)
     #[test]
-    fn f49_equals_gary_stated() {
-        assert_eq!(F49_COMPUTED, F49_STATED);
-        assert_eq!(F49_COMPUTED, 7_778_742_049);
+    fn f49_equals_seven_billion() {
+        assert_eq!(F49, 7_778_742_049);
     }
 
     /// `dr(F_k)` over one Pisano period must contain only values in
@@ -228,36 +221,4 @@ mod tests {
     /// ```text
     /// F_{24−u}  ≡  F_{−u}            (Pisano period mod 9 = 24)
     /// F_{−n}    =  (−1)^{n+1} F_n    (negative-index Fibonacci)
-    /// u odd for u ∈ U(24)            (since 2 | 24, gcd(u,2)=1)
-    /// ⟹  F_{24−u}  ≡  +F_u  (mod 9)
-    /// ⟹  dr(F_{24−u}) = dr(F_u)     ∎
-    /// ```
-    ///
-    /// References: Wall, *Fibonacci Series Modulo m*, Amer. Math.
-    /// Monthly 67 (1960) 525–532, for `π(9) = 24`. Vajda, *Fibonacci
-    /// & Lucas Numbers and the Golden Section* (1989), identity (49)
-    /// for `F_{−n}`. The result thus reduces to two textbook facts
-    /// plus the parity of `U(24)`. Phase 2 should formalise this in
-    /// Lean 4 as `theorem fibonacci_dr_palindrome` rather than relying
-    /// on the eight-case `decide` proof.
-    #[test]
-    fn fibonacci_dr_palindrome_over_u24() {
-        let u24: [u64; 8] = [1, 5, 7, 11, 13, 17, 19, 23];
-        for u in u24 {
-            assert_eq!(
-                dr_fib(u),
-                dr_fib(PISANO_PERIOD_MOD_DR - u),
-                "palindrome breaks: dr(F_{u}) ≠ dr(F_{} − u)",
-                PISANO_PERIOD_MOD_DR
-            );
-        }
-    }
-
-    /// FIB_MOD_DR_TABLE matches direct `fib_mod_dr` computation.
-    #[test]
-    fn fib_mod_dr_table_consistent() {
-        for (k, &v) in FIB_MOD_DR_TABLE.iter().enumerate() {
-            assert_eq!(v, fib_mod_dr(k as u64), "FIB_MOD_DR_TABLE[{k}] mismatch");
-        }
-    }
-}
+    /// u o

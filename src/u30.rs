@@ -13,12 +13,11 @@
 //! The eight elements `{1, 7, 11, 13, 17, 19, 23, 29}` are the
 //! **irreducibles modulo 30**: integers in `[1, 30)` that survive
 //! reduction by 2, 3, and 5. They are not prime in general (the
-//! integer `1` is a unit, not a prime), and the set extends to
+//! integer `1` is a unit, not a prime). The set extends to
 //! `R(360) = U(30) × {0, …, 11}` in [`crate::r360`] to give the 96
-//! "rooms" of the Master-Clock toroidal lattice. Primes greater
-//! than 5 always land in one of these eight residue classes; this is
-//! the structural reason the lattice can carry the prime-counting
-//! identity at all.
+//! lattice rooms. Primes greater than 5 always land in one of these
+//! eight residue classes — this is what makes the wheel-30 sieve in
+//! [`crate::sieve`] enumerate all primes exactly.
 //!
 //! ## Self-deriving construction
 //!
@@ -32,7 +31,7 @@
 //! A compile-time assertion confirms `RESIDUES.len() ==
 //! U30_CARDINALITY`. A separate compile-time check confirms that the
 //! computed `RESIDUES` exactly match Gary's stated values
-//! `{ 1, 7, 11, 13, 17, 19, 23, 29 }` from the FIXED PDF Appendix A —
+//! `{ 1, 7, 11, 13, 17, 19, 23, 29 }` from the Appendix A reference table —
 //! see [`GARY_STATED_RESIDUES`].
 //!
 //! ## UOR encoding
@@ -95,13 +94,13 @@ const _: () = {
     assert!(count == U30_CARDINALITY, "RESIDUES did not enumerate exactly U30_CARDINALITY values");
 };
 
-// ─── Verification: derived residues must match the FIXED PDF ────────
+// ─── Verification: derived residues must match the Appendix A reference ────────
 
-/// Gary's verbatim `U(30)` enumeration from the FIXED PDF Appendix A.
+/// Gary's verbatim `U(30)` enumeration from the Appendix A reference table.
 ///
 /// **This array exists only to verify the derivation.** Production
 /// code consults [`RESIDUES`] (the computed version). If the two
-/// disagree, either Gary's FIXED PDF is internally inconsistent or
+/// disagree, either Gary's Appendix A reference is internally inconsistent or
 /// our `gcd` is wrong; the build fails at the compile-time check below.
 pub const GARY_STATED_RESIDUES: [u64; U30_CARDINALITY] = [1, 7, 11, 13, 17, 19, 23, 29];
 
@@ -110,7 +109,7 @@ const _: () = {
     while i < U30_CARDINALITY {
         assert!(
             RESIDUES[i] == GARY_STATED_RESIDUES[i],
-            "Derived U(30) residue does not match Gary's stated FIXED PDF Appendix A value"
+            "Derived U(30) residue does not match Gary's stated Appendix A reference table value"
         );
         i += 1;
     }
@@ -258,99 +257,4 @@ impl ConstrainedTypeShape for U30 {
     const IRI: &'static str = "urn:uor:coproduct:U30Quartet0123:U30Quartet4567";
     const SITE_BUDGET: usize = {
         let a = <U30Quartet0123 as ConstrainedTypeShape>::SITE_BUDGET;
-        let b = <U30Quartet4567 as ConstrainedTypeShape>::SITE_BUDGET;
-        if a > b { a } else { b }
-    };
-    const SITE_COUNT: usize = {
-        let a = <U30Quartet0123 as ConstrainedTypeShape>::SITE_COUNT;
-        let b = <U30Quartet4567 as ConstrainedTypeShape>::SITE_COUNT;
-        (if a > b { a } else { b }) + 1
-    };
-    const CONSTRAINTS: &'static [ConstraintRef] = &[];
-}
-
-#[cfg(test)]
-mod tests {
-    #![allow(clippy::panic, clippy::unwrap_used, clippy::expect_used)]
-
-    use super::*;
-
-    /// Spot test mirroring the compile-time assertion: the derived
-    /// `RESIDUES` matches Gary's stated values.
-    #[test]
-    fn derived_residues_match_gary_stated() {
-        assert_eq!(RESIDUES, GARY_STATED_RESIDUES);
-    }
-
-    /// `RESIDUES` is strictly ascending.
-    #[test]
-    fn residues_are_strictly_ascending() {
-        for window in RESIDUES.windows(2) {
-            assert!(window[0] < window[1]);
-        }
-    }
-
-    /// Every `RESIDUES[i]` is coprime to `MODULUS_U`.
-    #[test]
-    fn residues_are_coprime_to_modulus_u() {
-        for &r in &RESIDUES {
-            assert_eq!(gcd(r, MODULUS_U), 1);
-        }
-    }
-
-    /// `RESIDUES` enumerates `[1, MODULUS_U)` ∩ {coprime} exactly:
-    /// no element is missed and no extraneous element is included.
-    #[test]
-    fn residues_exhaustively_enumerate_u30() {
-        let mut expected = [0u64; U30_CARDINALITY];
-        let mut idx = 0usize;
-        let mut n = 1u64;
-        while n < MODULUS_U {
-            if gcd(n, MODULUS_U) == 1 {
-                assert!(idx < U30_CARDINALITY, "more than U30_CARDINALITY hits");
-                expected[idx] = n;
-                idx += 1;
-            }
-            n += 1;
-        }
-        assert_eq!(idx, U30_CARDINALITY);
-        assert_eq!(expected, RESIDUES);
-    }
-
-    /// Each leaf shape's `Residue` constraint equals `(MODULUS_U,
-    /// RESIDUES[i])`.
-    #[test]
-    fn leaf_constraints_track_residues() {
-        fn check<S: ConstrainedTypeShape>(expected_residue: u64) {
-            assert_eq!(S::SITE_COUNT, 1);
-            assert_eq!(S::CONSTRAINTS.len(), 1);
-            if let ConstraintRef::Residue { modulus, residue } = S::CONSTRAINTS[0] {
-                assert_eq!(modulus, MODULUS_U);
-                assert_eq!(residue, expected_residue);
-            } else {
-                panic!("leaf shape must carry exactly one Residue constraint");
-            }
-        }
-        check::<U30R0>(RESIDUES[0]);
-        check::<U30R1>(RESIDUES[1]);
-        check::<U30R2>(RESIDUES[2]);
-        check::<U30R3>(RESIDUES[3]);
-        check::<U30R4>(RESIDUES[4]);
-        check::<U30R5>(RESIDUES[5]);
-        check::<U30R6>(RESIDUES[6]);
-        check::<U30R7>(RESIDUES[7]);
-    }
-
-    /// `U30::SITE_COUNT = 4` (balanced tree, depth 3, leaves of
-    /// SITE_COUNT 1).
-    #[test]
-    fn u30_site_count_is_four() {
-        assert_eq!(<U30 as ConstrainedTypeShape>::SITE_COUNT, 4);
-    }
-
-    /// `U30::IRI` is the SDK-canonical coproduct form.
-    #[test]
-    fn u30_iri_is_canonical_coproduct() {
-        assert!(<U30 as ConstrainedTypeShape>::IRI.starts_with("urn:uor:coproduct:"));
-    }
-}
+        let b = <U30Quartet4567 as ConstrainedTypeShape>::S

@@ -4,47 +4,31 @@ Released under Apache-2.0 license.
 
 # Prime Foundations — Lean 4 mirror of `toroidal-prime-clock`
 
-The Lean 4 formalisation of the foundational arithmetic substrate for
-Gary William Croft's *Toroidal Prime Counting Master-Clock*.
+Lean 4 formalisation of the Rust crate `toroidal-prime-clock`.
+Every theorem derives from the two irreducible parameters
+`MODULUS_U = 30` and `NUMERAL_BASE = 10` via standard number theory.
 
-Mirrors the Rust crate `toroidal-prime-clock` in `src/` and follows
-the discipline of `atlas-embeddings/lean4`:
-
-- **NO `sorry`** — every theorem closes by `decide`, `rfl`,
-  `norm_num`, or by structural induction over the small finite
-  domains involved.
-- Exact arithmetic (`ℤ`, `ℚ`) only — no `ℝ` until Phase 3 brings
-  in the Cauchy-rational analytic stack documented in `BRIDGE.md`.
-- Every constant is **derived** from `MODULUS_U = 30` and
-  `NUMERAL_BASE = 10` via `Nat.gcd`, `Nat.lcm`, and the Pisano
-  recurrence.
+- **NO `sorry`** — every theorem closes by `decide`, `native_decide`,
+  `rfl`, or constructive proof.
+- Integer arithmetic only; no real-valued analysis.
+- Every constant is **derived** from the two parameters via
+  `Nat.gcd`, `Nat.lcm`, the Fibonacci recurrence, or finite
+  enumeration.
 
 ## Top-level imports
 
-Phase 1+2 modules form the foundational substrate. Phase 3 modules
-extend the discrete substrate with the BRIDGE.md Layer 4–7
-constructions: exact rationals, Cauchy<ℚ> with explicit modulus,
-truncated Taylor/Mercator partial sums, and the `eml` composition.
+The 10 modules below form a strict Phase 1 substrate:
+
+- Foundations: `Parameters`, `Fibonacci`
+- Substrate: `U30`, `R360`, `U90`, `UnitsZ9`, `AppendixA`, `AtlasCorrespondence`
+- Sieve: `PrimeCount`
+- Reference: `Li`
 -/
 
--- Phase 1+2: discrete foundations
 import PrimeFoundations.Parameters
 import PrimeFoundations.Fibonacci
 import PrimeFoundations.U30
 import PrimeFoundations.R360
-import PrimeFoundations.AppendixA
-import PrimeFoundations.AtlasCorrespondence
-
--- Phase 3: BRIDGE.md Layers 4–7 (alloc-only Rust paths mirrored in Lean)
-import PrimeFoundations.Rational
-import PrimeFoundations.Cauchy
-import PrimeFoundations.Elementary
-
--- Phase 3 O7: empirical reference + Gary's claim, with the Phase 4
--- structural-anchor falsifiers (deltas {432, 96} ↔ {sumDR, rCardinality}).
-import PrimeFoundations.Li
-
--- Phase 4 partial: D(N), the Master-Clock lattice tally per Gary's
--- Developer's Guide v1.1 (chat, 2026-05-04). The first computable
--- component of `π(N) = D(N) − TF(N) + RF(N) + 3` to land in code.
-import PrimeFoundations.DFunction
+import PrimeFoundations.U90
+import PrimeFoundations.UnitsZ9
+import PrimeFoundations.Twi

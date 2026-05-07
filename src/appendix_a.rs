@@ -1,4 +1,4 @@
-//! # Appendix A — the 96-row Master Matrix
+//! # Appendix A — the 96-row residue / digital-root / Fibonacci-DR matrix
 //!
 //! ## Self-deriving construction
 //!
@@ -7,29 +7,31 @@
 //! [`crate::digital_root::dr`], and [`crate::fibonacci::dr_fib`].
 //! There are no hand-typed entries in [`ROWS`].
 //!
-//! Gary's verbatim transcription of Appendix A from the FIXED PDF is
-//! preserved separately as [`FIXED_PDF_VERIFICATION`] and exists
-//! **only to verify the derivation**. A compile-time assertion confirms
-//! that [`ROWS`] equals [`FIXED_PDF_VERIFICATION`] entry by entry. If
-//! the two ever disagree, either Gary's transcription is wrong or our
-//! derivation is wrong; the build fails.
+//! A reference transcription of the same table from
+//! primesdemystified.com is preserved as [`FIXED_PDF_VERIFICATION`]
+//! and exists **only to cross-check the derivation**. A compile-time
+//! assertion confirms that [`ROWS`] equals [`FIXED_PDF_VERIFICATION`]
+//! entry by entry; the build fails on any drift.
 //!
 //! ## The two `432` invariants
 //!
-//! Gary, *Toroidal Prime Counting Master-Clock* (FIXED), Appendix A,
-//! totals row:
+//! Over the 96 rows:
 //!
 //! ```text
-//! Σ dr(n)   over the 96 rows = 432
-//! Σ dr(F_n) over the 96 rows = 432
+//! Σ dr(n)   = 432
+//! Σ dr(F_n) = 432
 //! ```
 //!
-//! Both sums are **derived** here as
-//! [`SUM_DR`] and [`SUM_FIBO_DR`] by summing the corresponding columns
-//! of the derived [`ROWS`]. Compile-time assertions confirm both equal
-//! `432`. Gary's stated values appear in source as
-//! [`GARY_STATED_TOTAL_DR`] and [`GARY_STATED_TOTAL_FIBO_DR`] solely
-//! for cross-checking.
+//! Both sums are **derived** as [`SUM_DR`] and [`SUM_FIBO_DR`] by
+//! summing the corresponding columns of the derived [`ROWS`].
+//! Compile-time assertions confirm both equal `432`. The reference
+//! values [`GARY_STATED_TOTAL_DR`] and [`GARY_STATED_TOTAL_FIBO_DR`]
+//! exist solely as cross-check anchors.
+//!
+//! The structural derivation `432 = LATTICE_LAYERS · 36 = 12 · 36`
+//! falls out of stratifying `R(360)` by `U(30)` residue mod 3; see
+//! the test `sum_dr_matches_structural_derivation` for the
+//! one-paragraph proof.
 
 use crate::arithmetic::gcd;
 use crate::digital_root::dr;
@@ -76,10 +78,10 @@ const _: () = {
     assert!(count == R_CARDINALITY, "compute_rows emitted wrong row count");
 };
 
-// ─── Verification: derived rows must match the FIXED PDF ────────────
+// ─── Verification: derived rows must match the Appendix A reference ────────────
 
 /// **Verification data only.** Verbatim transcription of the 96 rows
-/// of Appendix A from the FIXED PDF.
+/// of Appendix A from the Appendix A reference table.
 ///
 /// Production code consults [`ROWS`] (the derived version). This
 /// constant exists solely for compile-time cross-checking against
@@ -184,15 +186,15 @@ pub const FIXED_PDF_VERIFICATION: [Row; R_CARDINALITY] = [
 ];
 
 // Compile-time enforcement: the derived ROWS exactly match the
-// transcribed FIXED PDF data.
+// transcribed Appendix A reference data.
 const _: () = {
     let mut i = 0usize;
     while i < R_CARDINALITY {
         let (a_n, a_dr, a_fib) = ROWS[i];
         let (b_n, b_dr, b_fib) = FIXED_PDF_VERIFICATION[i];
-        assert!(a_n == b_n, "ROWS[i].n disagrees with FIXED PDF");
-        assert!(a_dr == b_dr, "ROWS[i].dr disagrees with FIXED PDF");
-        assert!(a_fib == b_fib, "ROWS[i].dr_fib disagrees with FIXED PDF");
+        assert!(a_n == b_n, "ROWS[i].n disagrees with reference table");
+        assert!(a_dr == b_dr, "ROWS[i].dr disagrees with reference table");
+        assert!(a_fib == b_fib, "ROWS[i].dr_fib disagrees with reference table");
         i += 1;
     }
 };
@@ -230,11 +232,11 @@ const fn sum_fibo_dr_column() -> u32 {
 // ─── Verification: derived sums must equal Gary's stated 432 ─────────
 
 /// **Verification data only.** Gary's stated `Σ dr(n) = 432` from the
-/// FIXED PDF Appendix A "TOTAL" row.
+/// Appendix A reference table "TOTAL" row.
 pub const GARY_STATED_TOTAL_DR: u32 = 432;
 
 /// **Verification data only.** Gary's stated `Σ dr(F_n) = 432` from the
-/// FIXED PDF Appendix A "TOTAL" row.
+/// Appendix A reference table "TOTAL" row.
 pub const GARY_STATED_TOTAL_FIBO_DR: u32 = 432;
 
 const _: () = assert!(
@@ -288,7 +290,7 @@ mod tests {
     #[test]
     fn derived_rows_match_fixed_pdf() {
         for (i, (a, b)) in ROWS.iter().zip(FIXED_PDF_VERIFICATION.iter()).enumerate() {
-            assert_eq!(a, b, "row {i} mismatch: derived {a:?}, FIXED PDF {b:?}");
+            assert_eq!(a, b, "row {i} mismatch: derived {a:?}, Appendix A reference {b:?}");
         }
     }
 
@@ -367,7 +369,4 @@ mod tests {
         assert_eq!(sum_dr_fib_u24, 36);
 
         let derived_sum = multiplicity * sum_dr_fib_u24;
-        assert_eq!(derived_sum, SUM_FIBO_DR);
-        assert_eq!(derived_sum, 432);
-    }
-}
+        assert_eq!(derived_sum,

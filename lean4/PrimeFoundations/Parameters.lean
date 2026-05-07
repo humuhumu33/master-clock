@@ -16,7 +16,7 @@ namespace PrimeFoundations.Parameters
 
 /-! ## Parameters (irreducible) -/
 
-/-- Gary's chosen residue modulus, FIXED PDF §II. -/
+/-- Gary's chosen residue modulus, reference (primesdemystified.com). -/
 def modulusU : Nat := 30
 
 /-- The decimal numeral system. -/

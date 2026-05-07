@@ -7,26 +7,28 @@ on:
     branches: [main]
   workflow_dispatch:
 
-# Cancel in-progress runs on the same ref when a new push lands.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  # ─── Rust unit tests, default features (no_std-spirit, the smallest surface).
+  # ─── Default-feature build (no_std spirit, foundational modules only).
   rust-default:
-    name: rust default (~112 tests)
+    name: rust default (no_std)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
+      - name: cargo check --no-default-features
+        run: cargo check --lib --no-default-features
       - name: cargo test --lib
         run: cargo test --lib
 
-  # ─── Rust unit tests, alloc feature (BRIDGE Layers 4–7 + TF + RF).
+  # ─── Alloc-feature build — adds the wheel-30 sieve, π(N), and the
+  # replicant-factorization counter.
   rust-alloc:
-    name: rust alloc (~167 tests + 2 ignored)
+    name: rust alloc (sieve + π + replicants)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -35,59 +37,52 @@ jobs:
       - name: cargo test --lib --features alloc
         run: cargo test --lib --features alloc
 
-  # ─── Single-file integration suite + the printed validation report.
+  # ─── Single-file integration suite (Phase 1 + 1.5 + 2 + 3).
   rust-integration:
-    name: rust integration (30 tests + summary)
+    name: rust integration (validation suite)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - name: cargo test --test validation
-        run: |
-          OUTPUT=$(cargo test --test validation -- --nocapture validation_summary 2>&1)
-          echo "$OUTPUT"
-          {
-            echo "## Phase 1+2+3 Validation Summary"
-            echo ""
-            echo '```'
-            echo "$OUTPUT"
-            echo '```'
-          } >> "$GITHUB_STEP_SUMMARY"
+        run: cargo test --test validation --features alloc
 
-  # ─── The headline empirical result.
-  # Slow (~70s) because the rational `exp(-126)` Taylor series at BigInt
-  # precision is the rate-limiting step. Output goes both to the run log
-  # and to the run's "Summary" tab so reviewers see the residual table
-  # without leaving GitHub.
-  rust-live-evaluation:
-    name: rust live Master-Clock (~70s, residual vs π(N))
+  # ─── Cross-phase invariants — convergence under triality.
+  rust-cross-phase:
+    name: rust cross-phase invariants
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
-      - name: live Master-Clock evaluation
-        run: |
-          OUTPUT=$(cargo test --features alloc --test validation -- \
-              --ignored --nocapture phase4_master_clock_residual_at_gary_n 2>&1)
-          echo "$OUTPUT"
-          {
-            echo "## PHASE 4 — Live Master-Clock evaluation vs literature π(N)"
-            echo ""
-            echo '```'
-            echo "$OUTPUT"
-            echo '```'
-          } >> "$GITHUB_STEP_SUMMARY"
-      - name: upload residual table as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: live-evaluation-output
-          path: target/debug/deps/validation-*
+      - name: nine convergence tests (3×3 grid)
+        run: cargo test --test cross_phase_invariants --features alloc
+      - name: triality witnesses
+        run: cargo test --test triality_witnesses
 
-  # ─── Lean: zero-`sorry` static check. Fast, no Lean toolchain install
-  # required. Replicates `scripts/ci.sh` step 5 in a self-contained Python
-  # block. Catches both `--` line comments and nested `/-! … -/` blocks.
+  # ─── Standalone validators — single-file Rust binaries that reproduce
+  # every numerical claim without the crate.
+  standalone-validators:
+    name: standalone validators
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: validate sieve
+        run: rustc -O validate_sieve.rs -o validate_sieve && ./validate_sieve
+      - name: validate units of Z/9Z
+        run: rustc -O validate_units_z9.rs -o validate_units_z9 && ./validate_units_z9
+      - name: verify twin-prime rigor (11 check classes, 100k sweep)
+        run: rustc -O verify_twin_rigor.rs -o verify_twin_rigor && ./verify_twin_rigor
+      - name: verify Phase 3 batch
+        run: rustc -O verify_phase3_batch.rs -o verify_phase3_batch && ./verify_phase3_batch
+      - name: verify Phase 4 batch
+        run: rustc -O verify_phase4_batch.rs -o verify_phase4_batch && ./verify_phase4_batch
+      - name: verify Phase 5 batch
+        run: rustc -O verify_phase5_batch.rs -o verify_phase5_batch && ./verify_phase5_batch
+
+  # ─── Lean: zero-`sorry` static check. Fast, no toolchain install.
   lean-zero-sorry:
     name: lean zero-sorry guard
     runs-on: ubuntu-latest
@@ -151,16 +146,14 @@ jobs:
               for path, lineno, line in hits:
                   print(f"  {path}:{lineno}: {line}")
               sys.exit(1)
-          print(f"OK — zero `sorry` across {sum(1 for _ in pathlib.Path('lean4').rglob('*.lean'))} Lean files.")
+          n_files = sum(1 for _ in pathlib.Path('lean4').rglob('*.lean'))
+          print(f"OK — zero `sorry` across {n_files} Lean files.")
           PY
 
-  # ─── Lean: full lake build. Slow — first run downloads mathlib4 v4.23.0
-  # (~2 GB) and compiles it. After that the cache makes runs ~3 min.
-  # Marked `continue-on-error` so a Lean toolchain hiccup doesn't block
-  # the Rust evidence; the zero-sorry guard above is the load-bearing
-  # Lean check.
+  # ─── Lean: full lake build. Slow (mathlib download). Continue-on-error
+  # so a Lean toolchain hiccup doesn't block the Rust evidence.
   lean-lake-build:
-    name: lean lake build (mathlib v4.23.0)
+    name: lean lake build
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
@@ -181,6 +174,5 @@ jobs:
         working-directory: lean4
         run: |
           lake update
-          # Pull mathlib's pre-built cache so we don't compile it from source.
           lake exe cache get || echo "cache miss — will build from source"
           lake build

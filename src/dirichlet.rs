@@ -17,16 +17,14 @@
 //! primes greater than 5 are asymptotically equidistributed across
 //! these 8 classes, each containing roughly `(π(N) − 3) / 8` primes.
 //!
-//! ## Why this matters for the Master-Clock
+//! ## Why this matters for the wheel-30 sieve
 //!
-//! Gary's residue-weighting scheme assigns Fibonacci-digital-root
-//! weights to each `U(30)` class. Any such weighting reduces, in the
-//! large-`N` limit, to `(weight average) × (π(N) − 3)` plus a
-//! correction of order `√N`. Equidistribution is therefore the
-//! single load-bearing analytic fact that connects the lattice
-//! structure to actual prime counts. Without it, the lattice has no
-//! bearing on `π(N)`. With it, every weighting scheme is a small
-//! perturbation of the trivial one.
+//! Equidistribution is the analytic fact that connects the
+//! eight-class lattice substrate to actual prime counts. The wheel-30
+//! sieve in [`crate::sieve`] sieves each of the eight classes
+//! independently and sums; equidistribution guarantees that no class
+//! is asymptotically privileged, so every prime > 5 lands in exactly
+//! one of the eight slots and the sieve sees them all.
 //!
 //! ## Self-contained sieve
 //!
@@ -296,3 +294,4 @@ mod tests {
         assert_eq!(counts, recomputed);
     }
 }
+                                                                                                               
